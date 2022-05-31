@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ForbiddenException,
+  UseFilters,
+} from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
+import { HttpExceptionFilter } from './exceptions/exception-filters/http-exception-filter';
 
+@UseFilters(new HttpExceptionFilter())
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
@@ -13,7 +23,7 @@ export class CatsController {
 
   @Get()
   findAll() {
-    return this.catsService.findAll();
+    throw new ForbiddenException();
   }
 
   @Get(':id')
