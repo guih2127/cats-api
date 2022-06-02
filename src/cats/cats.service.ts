@@ -1,19 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { Cat } from './interfaces/cat.interface';
+import { PrismaService } from 'src/database/prisma/prisma.service';
+import { Cats, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CatsService {
-  private readonly cats: Cat[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  create(cat: Cat) {
-    this.cats.push(cat);
+  async create(data: Prisma.CatsCreateInput): Promise<Cats> {
+    return this.prisma.cats.create({
+      data,
+    });
   }
 
-  findAll(): Cat[] {
-    return this.cats;
+  async findAll(): Promise<Cats[]> {
+    return this.prisma.cats.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cat`;
+  async findOne(
+    catsWhereUniqueInput: Prisma.CatsWhereUniqueInput,
+  ): Promise<Cats | null> {
+    return this.prisma.cats.findUnique({
+      where: catsWhereUniqueInput,
+    });
   }
 }

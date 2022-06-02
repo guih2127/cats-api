@@ -5,28 +5,28 @@ import {
   Body,
   Param,
   ForbiddenException,
-  ParseIntPipe,
-  ValidationPipe,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
-import { CreateCatDto } from './dto/create-cat.dto';
+import { Cats as CatModel } from '@prisma/client';
 
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
-  async create(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
-    this.catsService.create(createCatDto);
+  async create(
+    @Body() catData: { name: string; breed: string; age: string },
+  ): Promise<CatModel> {
+    return this.catsService.create(catData);
   }
 
   @Get()
-  findAll() {
-    throw new ForbiddenException();
+  async findAll() {
+    return this.catsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.catsService.findOne(+id);
+  async getById(@Param('id') id: string): Promise<CatModel> {
+    return this.catsService.findOne({ id: id });
   }
 }
